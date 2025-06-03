@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input, textarea {
+      padding: 8px;
+      width: 100%;
+      margin: 6px 0;
+      box-sizing: border-box;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Log Page</h1>
+
+  <form id="logForm">
+    <label for="title">Log Title:</label>
+    <input type="text" id="title" required />
+
+    <label for="message">Message:</label>
+    <textarea id="message" rows="4" required></textarea>
+
+    <button type="submit">Add Log</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Title</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody id="logTableBody">
+      <!-- Logs will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("logForm");
+    const logTableBody = document.getElementById("logTableBody");
+
+    // Load existing logs
+    const logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+    function displayLogs() {
+      logTableBody.innerHTML = "";
+      logs.forEach(log => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${new Date(log.timestamp).toLocaleString()}</td>
+          <td>${log.title}</td>
+          <td>${log.message}</td>
+        `;
+        logTableBody.appendChild(row);
+      });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (title && message) {
+        const newLog = {
+          title,
+          message,
+          timestamp: new Date().toISOString()
+        };
+        logs.unshift(newLog); // Add new logs at the top
+        localStorage.setItem("logs", JSON.stringify(logs));
+        displayLogs();
+        form.reset();
+      }
+    });
+
+    displayLogs();
+  </script>
+</body>
+</html>
